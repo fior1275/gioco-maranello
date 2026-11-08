@@ -150,7 +150,7 @@
     <h1>🔧 OFFICINA <span>FORMULA 1</span></h1>
     <div class="stats">
       <div>Pezzi: <b id="bCount">0/12</b></div>
-      <div>⏱ <b id="bTime">0:00</b></div>
+      <div style="display:none">⏱ <b id="bTime">0:00</b></div>
       <button id="bHint">💡 Aiuto</button>
     </div>
   </div>
@@ -391,7 +391,7 @@ function showEnd(secs, best, rec) {
   const scr = document.createElement('div');
   scr.className = 'bscreen';
   scr.innerHTML = `<h2>🏆 MONOPOSTO PRONTA!</h2>
-    <p>Hai montato tutti i <b>12 pezzi</b> della tua Formula 1.<br>Tempo di montaggio: <b>${fmt(secs)}</b>${rec ? ' — 🎉 nuovo record!' : ''}</p>
+    <p>Hai montato tutti i <b>12 pezzi</b> della tua Formula 1.</p>
     <p>Ora portala sulla <b>Pista di Fiorano</b> e raccogli i bigliettini!</p>
     <button>IO PRONTA</button>`;
   root.querySelector('.bwrap').appendChild(scr);
@@ -848,7 +848,7 @@ function finish() {
       <p>Bigliettini raccolti: <b>${collected.length} su ${NOTE_COUNT}</b> in <b>${laps} ${laps === 1 ? 'giro' : 'giri'}</b><br>
       Presi al primo giro: <b>${first} su ${NOTE_COUNT}</b><br>
       Posizione in gara: <b>${['🥇 1°', '🥈 2°', '🥉 3°'][finishPos - 1] || finishPos + '°'} su ${cars.length + 1}</b><br>
-      Tempo totale: <b>${fmt(tot)}</b> &nbsp;·&nbsp; Miglior giro di sempre: <b>${fmt(best)}</b><br>
+      
       ${first === NOTE_COUNT ? '🏆 Perfetto: tutti al primo giro!' : all ? '👍 Bravo! Riprova a prenderli tutti al primo giro.' : ''}</p>
       <div class="list">${items}</div>
       <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
@@ -1189,8 +1189,7 @@ const hudL = document.getElementById('hudL'), hudR = document.getElementById('hu
 function updateHUD(dt) {
   spd.innerHTML = Math.round(speed / maxSpeed * 320) + ' <small>km/h</small>';
   const cur = state === 'race' ? raceTime - lapStart : null;
-  hudL.innerHTML = `Giro <b>${laps + 1}</b><br>Tempo: ${fmt(cur)}<br>Record: <b>${fmt(best)}</b>` +
-    (lapTimes.length ? '<br>Ultimo: ' + fmt(lapTimes[lapTimes.length - 1]) : '');
+  hudL.innerHTML = `Giro <b>${laps + 1}</b>`;
   hudR.innerHTML = `BIGLIETTINI<span>📄 ${collected.length}/${NOTE_COUNT}</span>POSIZIONE <b style="color:#ffd700;font-size:26px">${state === 'done' ? finishPos : racePosition()}°</b> su ${cars.length + 1}`;
   if (flashT > 0) {
     if (state !== 'reading') flashT -= dt; msg.textContent = flashText; msg.style.color = flashColor;
