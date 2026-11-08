@@ -2,12 +2,15 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>Gran Premio di Maranello</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-user-select: none; user-select: none; }
-  html, body { width: 100%; height: 100%; overflow: hidden; background: #000; font-family: Verdana, Geneva, Tahoma, sans-serif; touch-action: none; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: #000; font-family: Verdana, Geneva, Tahoma, sans-serif; touch-action: none; -webkit-text-size-adjust: 100%; overscroll-behavior: none; }
+  body * { touch-action: manipulation; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; }
+  canvas, svg, .tbtn, #touch { touch-action: none !important; }
+  .list, .paper { touch-action: pan-y !important; -webkit-overflow-scrolling: touch; }
   canvas { display: block; }
   .hud { position: fixed; color: #fff; text-shadow: 0 2px 4px #000; pointer-events: none; }
   #hudL { top: 10px; left: 12px; font-size: 16px; line-height: 1.5; }
@@ -47,6 +50,33 @@
   #bB { right: 106px; background: rgba(200,0,0,.35); } #bG { right: 14px; background: rgba(0,170,0,.35); }
   @media (hover: none) { #touch { display: block; } #speed { bottom: auto; top: 90px; } }
 </style>
+<script>
+// ---------- BLOCCO DELLO ZOOM SU CELLULARE E TABLET ----------
+(() => {
+  const VP = 'width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover';
+  const meta = document.querySelector('meta[name=viewport]');
+  // se la pagina è stata ingrandita, la riporta alla grandezza normale
+  window.resetZoom = () => {
+    meta.setAttribute('content', VP.replace('initial-scale=1,', 'initial-scale=1.01,'));
+    setTimeout(() => meta.setAttribute('content', VP), 60);
+  };
+  // niente zoom con due dita (iPhone / iPad)
+  for (const t of ['gesturestart', 'gesturechange', 'gestureend']) document.addEventListener(t, e => e.preventDefault(), { passive: false });
+  // niente zoom con due dita (Android) e niente zoom con doppio tocco
+  document.addEventListener('touchmove', e => { if (e.touches.length > 1 || (e.scale && e.scale !== 1)) e.preventDefault(); }, { passive: false });
+  let lastEnd = 0;
+  document.addEventListener('touchend', e => {
+    const now = Date.now();
+    if (now - lastEnd < 350 && !e.target.closest('button')) e.preventDefault();
+    lastEnd = now;
+  }, { passive: false });
+  document.addEventListener('dblclick', e => e.preventDefault(), { passive: false });
+  addEventListener('orientationchange', () => setTimeout(window.resetZoom, 300));
+  // se lo schermo risulta ingrandito, lo rimette a posto
+  if (window.visualViewport) visualViewport.addEventListener('resize', () => { if (visualViewport.scale > 1.01) window.resetZoom(); });
+  document.addEventListener('click', e => { if (e.target.closest('button')) setTimeout(window.resetZoom, 50); });
+})();
+</script>
 </head>
 <body>
 <canvas id="c"></canvas>
